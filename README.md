@@ -35,6 +35,20 @@
   * RocketMQ Version 5.1.4 
   * Seata Version 2.0.0 （ https://seata.apache.org/zh-cn/ ）
     		
+
+### 常用编译命令
+```shell
+./gradlew clean build  #清理并重新构建项目
+./gradlew clean   # 清理项目构建缓存
+./gradlew build --refresh-dependencies # 强制刷新依赖并重新下载
+./gradlew bootRun --args='--debug'  #启用调试模式获取详细日志
+
+# 可选：清理全局 Gradle 缓存（谨慎操作）
+rm -rf ~/.gradle/caches/
+./gradlew :gateway:compileKotlin  ##重新编译
+./gradlew :gateway:build
+./gradlew clean build -x test #完成网关开发后，使用命令打包
+```
 ### 部署中间件
 ```shell
 
@@ -43,6 +57,9 @@
   docker-compose down  # 清理旧容器
   docker-compose up -d     #在根目录执行，启动中间件部署（Docker-compose）
   docker-compose down && docker-compose up -d  #重启所有服务
+  docker-compose down -v  # 删除所有关联卷
+  rm -rf ./mysql/data/*  # 清空 MySQL 数据目录
+  docker-compose up -d  #启动
  
 ```
 * 如果仍有问题，请运行以下命令查看详细日志：
@@ -67,9 +84,7 @@
   
   docker exec -it seata sh  #验证 Seata 连接
   telnet mysql 3306  # 应能连通
-  
-  docker-compose down -v  # 删除所有关联卷
-  rm -rf ./mysql/data/*  # 清空 MySQL 数据目录
+
 
   # 下载 Nacos 官方 SQL 文件
  curl https://github.com/alibaba/nacos/blob/master/distribution/conf/mysql-schema.sql -O ./mysql/init/nacos-mysql.sql

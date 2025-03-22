@@ -1,0 +1,30 @@
+server:
+  port: 8081
+spring:
+  cloud:
+    # 网关配置
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - StripPrefix=2
+            - name: RequestRateLimiter
+
+    # Nacos 服务发现
+    nacos:
+      discovery:
+        service: gateway-service
+        server-addr: localhost:8848  # 替换为实际 Nacos 地址
+        username: nacos  # Nacos 服务端用户名（默认是 nacos）
+        password: nacos  # Nacos 服务端密码（默认是 nacos）
+
+    # Sentinel 流量控制
+    sentinel:
+      transport:
+        dashboard: localhost:8080  # 替换为实际 Sentinel 控制台地址
