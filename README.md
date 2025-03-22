@@ -38,17 +38,21 @@
 
 ### 常用编译命令
 ```shell
-./gradlew clean build  #清理并重新构建项目
-./gradlew clean   # 清理项目构建缓存
-./gradlew build --refresh-dependencies # 强制刷新依赖并重新下载
-./gradlew bootRun --args='--debug'  #启用调试模式获取详细日志
+  ./gradlew clean build  #清理并重新构建项目
+  ./gradlew clean   # 清理项目构建缓存
+  ./gradlew build --refresh-dependencies # 强制刷新依赖并重新下载
+  ./gradlew bootRun --args='--debug'  #启用调试模式获取详细日志
 
 # 可选：清理全局 Gradle 缓存（谨慎操作）
-rm -rf ~/.gradle/caches/
-./gradlew :gateway:compileKotlin  ##重新编译
-./gradlew :gateway:build
-./gradlew clean build -x test #完成网关开发后，使用命令打包
+  rm -rf ~/.gradle/caches/
+  ./gradlew :gateway:compileKotlin  ##重新编译
+  ./gradlew :gateway:build
+  ./gradlew clean build -x test #完成网关开发后，使用命令打包
+
+#批量创建目录
+  mkdir -p {mysql/data,mysql/conf,mysql/init,redis/data,redis/conf}
 ```
+
 ### 部署中间件
 ```shell
 
@@ -61,6 +65,29 @@ rm -rf ~/.gradle/caches/
   rm -rf ./mysql/data/*  # 清空 MySQL 数据目录
   docker-compose up -d  #启动
  
+```
+### Redis
+```shell
+  # 1. 检查容器网络连通性
+  docker network inspect qr-network 
+  # 2. 检查 Redis 日志
+  docker logs redis
+  # 3. 手动测试连接
+  docker exec -it gateway-service curl redis:6379
+  
+  docker exec -it redis redis-cli -a redis2025 --no-auth-warning
+  127.0.0.1:6379> info server
+  # 应看到 Redis 版本信息
+  
+```
+###问题：Redis 内存不足
+```shell
+  # 查看内存使用
+  docker exec -it redis redis-cli -a redis@2024 --no-auth-warning info memory
+  # 解决方案：调整 maxmemory 配置
+  vim redis/conf/redis.conf
+  # 修改 maxmemory 1024mb
+  docker-compose restart redis
 ```
 * 如果仍有问题，请运行以下命令查看详细日志：
 ```shell

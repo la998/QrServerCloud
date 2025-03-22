@@ -1,4 +1,22 @@
 services:
+  redis:
+    image: redis:7.2-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_PASSWORD=redis2025  # 设置访问密码
+    volumes:
+      - ./redis/data:/data
+      - ./redis/conf/redis.conf:/usr/local/etc/redis/redis.conf  # 挂载配置文件
+    networks:
+      - qr-network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "-a", "redis2025", "--no-auth-warning", "ping" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    command: redis-server /usr/local/etc/redis/redis.conf --requirepass $$REDIS_PASSWORD
   mysql:
     image: mysql:8.0.33
     container_name: mysql
@@ -108,3 +126,7 @@ services:
 networks:
   qr-network:
     driver: bridge
+
+volumes:
+  mysql-data:
+  redis-data:  # 新增 Redis 数据卷声明
