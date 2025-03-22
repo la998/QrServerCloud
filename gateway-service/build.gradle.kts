@@ -15,6 +15,7 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-starter-gateway")
     implementation("com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-discovery:2023.0.1.0")
     implementation("com.alibaba.cloud:spring-cloud-starter-alibaba-sentinel:2023.0.1.0")
+    // 响应式 Redis
     implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive")
     implementation("io.jsonwebtoken:jjwt-api:0.12.3")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.3")
@@ -27,6 +28,10 @@ dependencies {
     implementation("com.alibaba.csp:sentinel-reactor-adapter:1.8.6")
     // Sentinel传输层（用于连接Dashboard）
     implementation("com.alibaba.csp:sentinel-transport-simple-http:1.8.6")
+
+    // Kotlin 相关
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
 
     testImplementation(kotlin("test"))
 }

@@ -1,5 +1,7 @@
 server:
   port: 8081
+jwt:
+  secret: "your-256-bit-secret-key-here-must-be-at-least-32-chars"  # 替换为实际密钥
 spring:
   cloud:
     # 网关配置
