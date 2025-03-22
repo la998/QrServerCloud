@@ -20,6 +20,14 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.3")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.3")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
+
+    // Sentinel网关适配器（关键）
+    implementation("com.alibaba.csp:sentinel-spring-cloud-gateway-adapter:1.8.6")
+    // Sentinel响应式支持
+    implementation("com.alibaba.csp:sentinel-reactor-adapter:1.8.6")
+    // Sentinel传输层（用于连接Dashboard）
+    implementation("com.alibaba.csp:sentinel-transport-simple-http:1.8.6")
+
     testImplementation(kotlin("test"))
 }
 

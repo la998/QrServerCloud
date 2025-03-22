@@ -15,7 +15,8 @@ spring:
           filters:
             - StripPrefix=2
             - name: RequestRateLimiter
-
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin
     # Nacos 服务发现
     nacos:
       discovery:
@@ -26,5 +27,9 @@ spring:
 
     # Sentinel 流量控制
     sentinel:
+      eager: true # 立即初始化
       transport:
         dashboard: localhost:8080  # 替换为实际 Sentinel 控制台地址
+        port: 8719 # 本地端口
+      filter:
+        enabled: false # 禁用默认的Servlet Filter
