@@ -1,3 +1,5 @@
+## 基于Spring Cloud Alibaba 的二维码服务端
+
 ### 架构示意
 ```angular2html
                       [用户端]
@@ -34,6 +36,13 @@
   * Nacos Version 2.3.2 （）
   * RocketMQ Version 5.1.4 
   * Seata Version 2.0.0 （ https://seata.apache.org/zh-cn/ ）
+
+### 模块
+  * gate-service 网关服务
+  * 认证服务
+  * 用户服务
+  * 二维码服务
+  * 标签服务
     		
 
 ### 常用编译命令
@@ -61,9 +70,14 @@
   docker-compose down  # 清理旧容器
   docker-compose up -d     #在根目录执行，启动中间件部署（Docker-compose）
   docker-compose down && docker-compose up -d  #重启所有服务
+  
   docker-compose down -v  # 删除所有关联卷
   rm -rf ./mysql/data/*  # 清空 MySQL 数据目录
+  rm -rf ./redis/data/*  # 清空 redis 数据目录
   docker-compose up -d  #启动
+  
+  docker-compose down --volumes  # 清理旧配置
+  docker-compose down redis && docker-compose up -d redis  #重启 Redis 服务
  
 ```
 ### Redis
@@ -78,6 +92,15 @@
   docker exec -it redis redis-cli -a redis2025 --no-auth-warning
   127.0.0.1:6379> info server
   # 应看到 Redis 版本信息
+  
+  #检查密码是否生效
+  # 进入 Redis CLI 并认证
+  docker exec -it redis redis-cli -a redis2025
+  # 执行命令验证
+  127.0.0.1:6379> PING
+  # 应返回 "PONG"
+  127.0.0.1:6379> ACL LIST
+  # 应显示用户信息
   
 ```
 ###问题：Redis 内存不足

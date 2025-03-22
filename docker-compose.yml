@@ -4,8 +4,6 @@ services:
     container_name: redis
     ports:
       - "6379:6379"
-    environment:
-      - REDIS_PASSWORD=redis2025  # 设置访问密码
     volumes:
       - ./redis/data:/data
       - ./redis/conf/redis.conf:/usr/local/etc/redis/redis.conf  # 挂载配置文件
@@ -16,7 +14,7 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
-    command: redis-server /usr/local/etc/redis/redis.conf --requirepass $$REDIS_PASSWORD
+    command: redis-server /usr/local/etc/redis/redis.conf --requirepass redis2025
   mysql:
     image: mysql:8.0.33
     container_name: mysql
