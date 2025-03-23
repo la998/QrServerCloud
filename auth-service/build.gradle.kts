@@ -23,7 +23,8 @@ dependencies {
     // 数据库相关
     runtimeOnly("dev.miku:r2dbc-mysql:0.8.2.RELEASE")
     runtimeOnly("mysql:mysql-connector-java:8.0.33")
-
+    implementation("org.flywaydb:flyway-core:9.22.3")  // Flyway 核心库
+    implementation("org.flywaydb:flyway-mysql:9.22.3") // MySQL 支持
     // JWT
     implementation("io.jsonwebtoken:jjwt-api:0.11.5")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")

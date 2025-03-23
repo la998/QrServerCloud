@@ -1,8 +1,4 @@
--- 创建数据库
-CREATE DATABASE IF NOT EXISTS auth_db;
 
--- 切换到新数据库
-USE auth_db;
 -- 创建用户表
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
