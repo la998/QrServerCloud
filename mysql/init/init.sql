@@ -1,4 +1,9 @@
 -- init.sql
+-- 创建 项目 数据库
+CREATE DATABASE IF NOT EXISTS auth_db
+  DEFAULT CHARACTER SET utf8mb4
+  DEFAULT COLLATE utf8mb4_unicode_ci;
+
 -- 创建 Nacos 数据库并导入表
 CREATE DATABASE IF NOT EXISTS nacos_config
   DEFAULT CHARACTER SET utf8mb4
@@ -266,7 +271,10 @@ INSERT INTO `distributed_lock` (lock_key, lock_value, expire) VALUES ('TxTimeout
 
 
 -- 创建用户并授权
-CREATE USER IF NOT EXISTS 'nacos'@'%' IDENTIFIED WITH 'mysql_native_password' BY 'nacos';
-GRANT ALL PRIVILEGES ON nacos_config.* TO 'nacos'@'%';
-GRANT ALL PRIVILEGES ON seata.* TO 'nacos'@'%';
+ALTER USER 'root'@'%' IDENTIFIED WITH 'mysql_native_password' BY 'root123456';
+CREATE USER 'seata'@'%' IDENTIFIED WITH 'mysql_native_password' BY 'seata123456';
+GRANT ALL PRIVILEGES ON seata.* TO 'seata'@'%';
+CREATE USER IF NOT EXISTS 'nacos'@'%' IDENTIFIED WITH 'mysql_native_password' BY 'nacos123456';
+GRANT ALL PRIVILEGES ON nacos_config.* TO 'nacos'@'%' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON auth_db.* TO 'nacos'@'%';
 FLUSH PRIVILEGES;

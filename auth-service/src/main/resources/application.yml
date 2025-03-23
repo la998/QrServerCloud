@@ -1,25 +1,35 @@
-server:
-  port: 8082
 spring:
+  application:
+    name: auth-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+        username: nacos
+        password: nacos
   security:
     oauth2:
       resourceserver:
         jwt:
           issuer-uri: http://auth-service
-  cloud:
-    nacos:
-      discovery:
-        service: auth-service
-        server-addr: localhost:8848  # 替换为实际 Nacos 地址
-        username: nacos  # Nacos 服务端用户名（默认是 nacos）
-        password: nacos  # Nacos 服务端密码（默认是 nacos）
+  r2dbc:
+    url: r2dbc:mysql://root:root123456@localhost:3306/auth_db?useSSL=false
+    username: root
+    password: root123456
   data:
     redis:
       host: 127.0.0.1
       port: 6379
       password: redis2025
+      database: 0
       lettuce:
         pool:
-          max-active: 16
+          max-active: 8
           max-idle: 8
-          min-idle: 4
+jwt:
+  secret-key: ziRt0uB6W4bGYny2Vq5AuhnZktJ5ZUPL75Xi9Pgj1fU=
+  access-token-expire: PT2H
+  refresh-token-expire: P7D
+
+server:
+  port: 8082

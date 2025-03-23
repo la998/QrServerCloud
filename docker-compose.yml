@@ -10,18 +10,18 @@ services:
     networks:
       - qr-network
     healthcheck:
-      test: [ "CMD", "redis-cli", "-a", "redis2025", "--no-auth-warning", "ping" ]
+      test: [ "CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "--no-auth-warning", "ping" ]
       interval: 5s
       timeout: 3s
       retries: 5
-    command: redis-server /usr/local/etc/redis/redis.conf --requirepass redis2025
+    command: redis-server /usr/local/etc/redis/redis.conf --requirepass ${REDIS_PASSWORD}
   mysql:
     image: mysql:8.0.33
     container_name: mysql
     ports:
       - "3306:3306"
     environment:
-      - MYSQL_ROOT_PASSWORD=root123456  # 仅保留 root 密码
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}  # 仅保留 root 密码
       - TZ=Asia/Shanghai
       - MYSQL_DEFAULT_AUTHENTICATION_PLUGIN=mysql_native_password
     volumes:
@@ -31,12 +31,13 @@ services:
     networks:
       - qr-network
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot123456" ]
-      interval: 5s
-      timeout: 3s
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${MYSQL_ROOT_PASSWORD}" ]
+      interval: 30s
+      timeout: 30s
       retries: 10
     command:
       - --log-error-verbosity=3
+      - --default-time-zone=+8:00
   nacos:
     image: nacos/nacos-server:v2.5.1
     container_name: nacos
@@ -55,7 +56,7 @@ services:
       - MYSQL_SERVICE_PORT=3306
       - MYSQL_SERVICE_DB_NAME=nacos_config
       - MYSQL_SERVICE_USER=nacos
-      - MYSQL_SERVICE_PASSWORD=nacos
+      - MYSQL_SERVICE_PASSWORD=${NACOS_DB_PASSWORD}
       - MYSQL_SERVICE_DB_PARAM=characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
     depends_on:
       mysql:
@@ -70,7 +71,7 @@ services:
       - "8080:8858"
     environment:
       - AUTH_USERNAME=sentinel
-      - AUTH_PASSWORD=sentinel@2024
+      - AUTH_PASSWORD=${SENTINEL_AUTH_PASSWORD}
     networks:
       - qr-network
 
@@ -107,14 +108,14 @@ services:
     ports:
       - "8091:8091"
     environment:
-      - SEATA_IP=192.168.0.150  # 替换为你的本机 IP
+      - SEATA_IP=${SEATA_IP}  # 替换为你的本机 IP
       - STORE_MODE=db
       - DB_HOST=mysql
       - DB_PORT=3306
-      - DB_USER=root
-      - DB_PASSWORD=root123456
+      - DB_USER=seata
+      - DB_PASSWORD=${SEATA_DB_PASSWORD}
       - SEATA_CONFIG_NACOS_USERNAME=nacos
-      - SEATA_CONFIG_NACOS_PASSWORD=nacos
+      - SEATA_CONFIG_NACOS_PASSWORD=${SEATA_CONFIG_NACOS_PASSWORD}
     depends_on:
       mysql:
         condition: service_healthy
@@ -127,4 +128,4 @@ networks:
 
 volumes:
   mysql-data:
-  redis-data:  # 新增 Redis 数据卷声明
+  redis-data:

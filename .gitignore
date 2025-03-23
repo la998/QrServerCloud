@@ -44,5 +44,7 @@ bin/
 ### Mac OS ###
 .DS_Store
 
+.env
+
 mysql/data/
 redis/data/

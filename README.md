@@ -39,11 +39,11 @@
 
 ### 模块
   * gate-service 网关服务
-  * 认证服务
+  * auth-service 认证服务
   * 用户服务
   * 二维码服务
   * 标签服务
-    		
+ 
 
 ### 常用编译命令
 ```shell
@@ -52,14 +52,19 @@
   ./gradlew build --refresh-dependencies # 强制刷新依赖并重新下载
   ./gradlew bootRun --args='--debug'  #启用调试模式获取详细日志
 
-# 可选：清理全局 Gradle 缓存（谨慎操作）
-  rm -rf ~/.gradle/caches/
-  ./gradlew :gateway:compileKotlin  ##重新编译
+  rm -rf ~/.gradle/caches/  # 可选：清理全局 Gradle 缓存（谨慎操作）
   ./gradlew :gateway:build
-  ./gradlew clean build -x test #完成网关开发后，使用命令打包
+  ./gradlew clean build -x test #完成开发后，使用命令打包
+  
+  #重新编译
+  ./gradlew :gateway:compileKotlin  
+  ./gradlew :auth-service:compileKotlin
 
-#批量创建目录
+  #批量创建目录
   mkdir -p {mysql/data,mysql/conf,mysql/init,redis/data,redis/conf}
+  
+  # 生成安全密钥
+  openssl rand -base64 32
 ```
 
 ### 部署中间件
@@ -69,15 +74,31 @@
   docker-compose --version  # 检查 Docker Compose 版本
   docker-compose down  # 清理旧容器
   docker-compose up -d     #在根目录执行，启动中间件部署（Docker-compose）
-  docker-compose down && docker-compose up -d  #重启所有服务
+  docker-compose down && docker-compose up -d  #重新部署所有服务
   
   docker-compose down -v  # 删除所有关联卷
   rm -rf ./mysql/data/*  # 清空 MySQL 数据目录
   rm -rf ./redis/data/*  # 清空 redis 数据目录
-  docker-compose up -d  #启动
+  docker-compose up -d  #启动生成容器
+  
+  rm -rf ./mysql/data/* ./redis/data/*
+  docker-compose down -v && docker-compose up -d
   
   docker-compose down --volumes  # 清理旧配置
-  docker-compose down redis && docker-compose up -d redis  #重启 Redis 服务
+  docker-compose down redis && docker-compose up -d redis  #重新部署 Redis 服务
+  docker-compose down mysql && docker-compose up -d mysql  #重新部署 mysql 服务
+  
+  docker ps  # 查看所有运行中的容器
+  docker-compose ps  # 查看当前项目的容器状态
+
+  docker-compose restart  # 重启所有容器
+  docker-compose restart mysql  # 仅重启 MySQL
+  docker-compose start  #在 docker-compose.yml 所在目录执行以下命令，启动所有已创建但停止的容器
+  docker-compose start <服务名>
+  docker start mysql  # 启动 MySQL 容器
+  docker start redis  # 启动 Redis 容器
+  
+  docker-compose config  #运行以下命令检查.env变量是否被正确替换到docker-compose.yml
  
 ```
 ### Redis
