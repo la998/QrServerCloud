@@ -28,3 +28,4 @@ rootProject.name = "QrServerCloud"
 // include("submodule1", "submodule2") // 按需添加子模块
 include("gateway-service")
 include("auth-service")
+include("user-service")
