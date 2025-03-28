@@ -19,7 +19,11 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-aop")
 
+    implementation("com.fasterxml.jackson.core:jackson-databind")
+    implementation("org.aspectj:aspectjrt:1.9.20.1")
+    implementation("org.aspectj:aspectjweaver:1.9.20.1")
     // 数据库相关
+    implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
     runtimeOnly("dev.miku:r2dbc-mysql:0.8.2.RELEASE")
     runtimeOnly("mysql:mysql-connector-java:8.0.33")
     implementation("org.flywaydb:flyway-core:9.22.3")

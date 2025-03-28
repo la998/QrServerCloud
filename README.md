@@ -44,6 +44,16 @@
   * 二维码服务
   * 标签服务
  
+### 重新部署
+  * 删除所有数据和容器，从新部署
+```shell
+  chmod -R 777 ./configs/*
+  chmod -R 777 ./data/*
+  chmod -R 777 ./scripts/*
+  chmod +x redeploy.sh
+  ./redeploy.sh         #开发环境
+  ./redeploy.sh prod    #生产环境
+```
 
 ### 常用编译命令
 ```shell
@@ -110,13 +120,13 @@
   # 3. 手动测试连接
   docker exec -it gateway-service curl redis:6379
   
-  docker exec -it redis redis-cli -a redis2025 --no-auth-warning
+  docker exec -it redis redis-cli -a redis123456 --no-auth-warning
   127.0.0.1:6379> info server
   # 应看到 Redis 版本信息
   
   #检查密码是否生效
   # 进入 Redis CLI 并认证
-  docker exec -it redis redis-cli -a redis2025
+  docker exec -it redis redis-cli -a redis123456
   # 执行命令验证
   127.0.0.1:6379> PING
   # 应返回 "PONG"
@@ -170,6 +180,32 @@
     * 创建命名空间：DEV
 
     * 导入初始配置文件（示例配置）
+  
+  * Nacos 运行成功后，创建seata配置(已改为使用在docker-compose 创建容器时执行 init-seata-config.sh)
+
+    * 点击右侧的 +（新建配置），开始添加：
+
+    * Data ID: seataServer.properties
+
+    * Group: SEATA_GROUP
+
+    * 配置格式: 选择 Properties
+
+    * 配置内容（根据你的数据库信息调整，确保密码与环境变量一致）：
+```angular2html
+
+# 事务组映射（客户端事务组名 -> Seata 集群名）
+service.vgroupMapping.default_tx_group=default
+
+# Seata Server 数据库配置
+store.db.datasource=seata
+store.db.dbType=mysql
+store.db.driverClassName=com.mysql.cj.jdbc.Driver
+store.db.url=jdbc:mysql://mysql:3306/seata?useSSL=false&serverTimezone=Asia/Shanghai
+store.db.user=seata
+store.db.password=SEATA_DB_PASSWORD  # 这里的 SEATA_DB_PASSWORD 需要替换为实际数据库密码
+```
 
 * Sentinel访问：
   * http://localhost:8080 (账号sentinel/sentinel@2024)
+  * 

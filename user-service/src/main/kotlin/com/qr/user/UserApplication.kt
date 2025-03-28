@@ -9,5 +9,5 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient
 class UserApplication
 
 fun main(args: Array<String>) {
-    runApplication<UserApplication      >(*args)
+    runApplication<UserApplication>(*args)
 }

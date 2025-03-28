@@ -1,12 +1,42 @@
+audit:
+  retention-days: 180    # 日志保留天数
+  sensitive-fields: password,token  # 敏感字段列表
 spring:
   application:
     name: user-service
   cloud:
     nacos:
+      config:
+        server-addr: 127.0.0.1:8848
       discovery:
         server-addr: 127.0.0.1:8848
         username: nacos
         password: nacos
+        grpc:
+          server-addr: 127.0.0.1:9848
+    seata:
+      enabled: true
+      application-id: user-service
+      tx-service-group: default_tx_group
+      service:
+        vgroup-mapping:
+          default_tx_group: default  # 事务组映射
+      registry:
+        type: nacos
+        nacos:
+          server-addr: nacos:8848
+          namespace: public
+          group: SEATA_GROUP
+          username: nacos
+          password: ${SEATA_CONFIG_NACOS_PASSWORD}
+      config:
+        type: nacos
+        nacos:
+          server-addr: nacos:8848
+          namespace: public
+          group: SEATA_GROUP
+          username: nacos
+          password: ${SEATA_CONFIG_NACOS_PASSWORD}
   security:
     oauth2:
       resourceserver:
@@ -17,12 +47,15 @@ spring:
     url: r2dbc:mysql://localhost:3306/user_db?useSSL=false
     username: root
     password: root123456
+    pool:
+      initial-size: 5
+      max-size: 10
 
   data:
     redis:
       host: localhost
       port: 6379
-      password: redis2025
+      password: redis123456
       lettuce:
         pool:
           max-active: 8
@@ -31,14 +64,16 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
-    baseline-on-migrate: true
+    repair-on-migrate: true # 启动时自动修复校验和不匹配问题
+    baseline-on-migrate: true # 如果存在基线迁移则忽略历史
     user: root
     password: root123456
     url: jdbc:mysql://localhost:3306/user_db?useSSL=false
 
 jwt:
   secret-key: ziRt0uB6W4bGYny2Vq5AuhnZktJ5ZUPL75Xi9Pgj1fU=
-
+  access-token-expire: 2h # 访问令牌有效期
+  refresh-token-expire: 7d # 刷新令牌有效期
 server:
   port: 8083
 
@@ -47,3 +82,6 @@ management:
     web:
       exposure:
         include: health,info,metrics
+  metrics:
+    tags:
+      application: ${spring.application.name}
