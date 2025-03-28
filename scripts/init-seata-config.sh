@@ -6,7 +6,7 @@ wait_for_service() {
   local host=$1 port=$2
   echo "Waiting for $host:$port..."
   while ! nc -z $host $port; do
-    sleep 1
+    sleep 2
   done
 }
 
@@ -17,9 +17,8 @@ main() {
 
   # 生成配置内容
   config_content=$(cat <<EOF
-service.vgroupMapping.default_tx_group=default
 store.mode=db
-store.db.datasource=seata
+store.db.datasource=druid
 store.db.dbType=mysql
 store.db.driverClassName=com.mysql.cj.jdbc.Driver
 store.db.url=jdbc:mysql://qr-mysql:3306/seata?useSSL=false
@@ -28,10 +27,15 @@ store.db.password=${SEATA_DB_PASSWORD}
 EOF
   )
 
-  # 推送配置到Nacos
-  curl -X POST "http://qr-nacos:8848/nacos/v1/cs/configs" \
-    -d "dataId=seataServer.properties&group=SEATA_GROUP&content=$config_content" \
-    -u "nacos:${NACOS_AUTH_PASSWORD}"
+# 推送事务组映射配置
+curl -X POST "http://qr-nacos:8848/nacos/v1/cs/configs" \
+  -d "dataId=service.vgroupMapping.default_tx_group&group=SEATA_GROUP&content=default" \
+  -u "nacos:${NACOS_AUTH_PASSWORD}"
+
+ # 推送 Seata 服务端配置
+ curl -X POST "http://qr-nacos:8848/nacos/v1/cs/configs" \
+   -d "dataId=seataServer.properties&group=SEATA_GROUP&content=$config_content" \
+   -u "nacos:${NACOS_AUTH_PASSWORD}"
 
   echo "Configuration pushed successfully"
 }

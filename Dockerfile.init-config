@@ -1,0 +1,5 @@
+FROM curlimages/curl:latest
+
+USER root
+RUN apk add --no-cache bash
+USER curl_user

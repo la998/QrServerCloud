@@ -84,19 +84,21 @@ services:
     networks: [qr-network]
 
   init-config:
-    image: curlimages/curl:latest
-    user: root
+    build:
+      context: .
+      dockerfile: Dockerfile.init-config  # 指定 Dockerfile 路径
+    image: init-seata-to-nacos-config:latest  # 自定义镜像名称
     container_name: init-seata-config
     networks: [qr-network]
     depends_on:
       nacos:
         condition: service_healthy
-    volumes:
-      - ./scripts:/scripts
-    command: sh -c "apk add --no-cache bash && bash /scripts/init-seata-config.sh"
     environment:
       NACOS_AUTH_PASSWORD: ${NACOS_AUTH_PASSWORD}
       SEATA_DB_PASSWORD: ${SEATA_DB_PASSWORD}
+    volumes:
+      - ./scripts:/scripts  # 挂载宿主机脚本目录到容器
+    command: [ "bash", "/scripts/init-seata-config.sh" ]
 
 networks:
   qr-network:

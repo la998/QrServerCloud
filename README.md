@@ -79,6 +79,12 @@
 
 ### 部署中间件
 ```shell
+  #运行以下命令构建镜像（注意最后的 .）:构建镜像用于初始化seata配置自动写入nacos中
+  #避免每次部署容器init-config都需要重新下载
+  docker build -f Dockerfile.init-config -t init-seata-to-nacos-config:latest .
+  docker images | grep init-seata-to-nacos-config     #验证镜像是否生成
+  docker rmi -f init-seata-to-nacos-config:latest .    #删除镜像
+ 
 
   docker --version          # 检查 Docker 版本
   docker-compose --version  # 检查 Docker Compose 版本

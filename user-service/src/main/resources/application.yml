@@ -28,7 +28,7 @@ spring:
           namespace: public
           group: SEATA_GROUP
           username: nacos
-          password: ${SEATA_CONFIG_NACOS_PASSWORD}
+          password: ${NACOS_AUTH_PASSWORD}
       config:
         type: nacos
         nacos:
