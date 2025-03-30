@@ -20,6 +20,7 @@ cleanup() {
   echo -e "${YELLOW}▶ 清理数据目录...${NC}"
   [ -d "./data/mysql/" ] && sudo rm -rf ./data/mysql/*
   [ -d "./data/redis/" ] && sudo rm -rf ./data/redis/*
+  [ -d "./data/nacos/standalone-logs/" ] && sudo rm -rf ./data/nacos/standalone-logs/*
 
   echo -e "${GREEN}✓ 清理完成${NC}"
 }

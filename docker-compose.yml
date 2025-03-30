@@ -31,34 +31,36 @@ services:
       - ./configs/mysql/0-init.sql:/docker-entrypoint-initdb.d/0-init.sql
       - ./configs/mysql/1-nacos-schema.sql:/docker-entrypoint-initdb.d/1-nacos-schema.sql
       - ./configs/mysql/2-seata-schema.sql:/docker-entrypoint-initdb.d/2-seata-schema.sql
+      - ./configs/mysql/3-custom.sql:/docker-entrypoint-initdb.d/3-custom.sql
     networks: [qr-network]
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-uroot", "-p${MYSQL_ROOT_PASSWORD}"]
-      interval: 10s
-      timeout: 5s
-      retries: 15
+      interval: 15s
+      timeout: 10s
+      retries: 10
 
   nacos:
     image: nacos/nacos-server:v2.5.1
     container_name: qr-nacos
     ports: ["8848:8848", "9848:9848"]
+    user: "0:0"
+    env_file:
+      - ./configs/nacos/nacos-standalone-mysql.env
     environment:
-      MODE: standalone
-      SPRING_DATASOURCE_PLATFORM: mysql
-      MYSQL_SERVICE_HOST: qr-mysql
-      MYSQL_SERVICE_USER: nacos
-      MYSQL_SERVICE_PASSWORD: ${NACOS_DB_PASSWORD}
-      MYSQL_SERVICE_DB_NAME: nacos_config
-      JVM_FLAGS: -Dnacos.security.ignore.urls=/**
+      - NACOS_AUTH_IDENTITY_KEY=${NACOS_AUTH_IDENTITY_KEY} # 从环境变量传递
+      - NACOS_AUTH_IDENTITY_VALUE=${NACOS_AUTH_IDENTITY_VALUE}
+    volumes:
+      - ./configs/nacos/custom.properties:/home/nacos/init.d/custom.properties # 挂载自定义配置
     depends_on:
       mysql:
         condition: service_healthy
     networks: [qr-network]
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8848/nacos"]
+      test: ["CMD", "curl", "-f", "http://localhost:8848/nacos/"]
       interval: 10s
       timeout: 5s
-      retries: 15
+      retries: 10
+      start_period: 30s
 
   sentinel:
     image: bladex/sentinel-dashboard:1.8.6
@@ -66,6 +68,7 @@ services:
     ports:
       - "8080:8858"
     environment:
+      - AUTH_ENABLED=true
       - AUTH_USERNAME=sentinel
       - AUTH_PASSWORD=${SENTINEL_AUTH_PASSWORD}
     networks: [qr-network]
@@ -78,6 +81,8 @@ services:
       SEATA_IP: ${SEATA_IP}
       SEATA_CONFIG_TYPE: nacos
       SEATA_CONFIG_NACOS_SERVER_ADDR: qr-nacos:8848
+      SEATA_CONFIG_NACOS_USERNAME: nacos  # 默认用户名
+      SEATA_CONFIG_NACOS_PASSWORD: ${NACOS_AUTH_PASSWORD}  # 对应你的密码
     depends_on:
       nacos:
         condition: service_healthy
@@ -93,7 +98,11 @@ services:
     depends_on:
       nacos:
         condition: service_healthy
+      mysql:
+          condition: service_healthy
     environment:
+      NACOS_AUTH_IDENTITY_KEY: ${NACOS_AUTH_IDENTITY_KEY}
+      NACOS_AUTH_IDENTITY_VALUE: ${NACOS_AUTH_IDENTITY_VALUE}
       NACOS_AUTH_PASSWORD: ${NACOS_AUTH_PASSWORD}
       SEATA_DB_PASSWORD: ${SEATA_DB_PASSWORD}
     volumes:

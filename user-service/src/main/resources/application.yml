@@ -7,11 +7,13 @@ spring:
   cloud:
     nacos:
       config:
-        server-addr: 127.0.0.1:8848
+        server-addr: qr-nacos:8848  # 使用容器名而非 127.0.0.1
+        username: nacos
+        password: ${NACOS_AUTH_PASSWORD}
       discovery:
         server-addr: 127.0.0.1:8848
         username: nacos
-        password: nacos
+        password: ${NACOS_AUTH_PASSWORD}
         grpc:
           server-addr: 127.0.0.1:9848
     seata:
@@ -20,11 +22,11 @@ spring:
       tx-service-group: default_tx_group
       service:
         vgroup-mapping:
-          default_tx_group: default  # 事务组映射
+          default_tx_group: default
       registry:
         type: nacos
         nacos:
-          server-addr: nacos:8848
+          server-addr: qr-nacos:8848
           namespace: public
           group: SEATA_GROUP
           username: nacos
@@ -32,11 +34,11 @@ spring:
       config:
         type: nacos
         nacos:
-          server-addr: nacos:8848
+          server-addr: qr-nacos:8848
           namespace: public
           group: SEATA_GROUP
           username: nacos
-          password: ${SEATA_CONFIG_NACOS_PASSWORD}
+          password: ${NACOS_AUTH_PASSWORD}
   security:
     oauth2:
       resourceserver:
@@ -44,18 +46,18 @@ spring:
           issuer-uri: http://auth-service
 
   r2dbc:
-    url: r2dbc:mysql://localhost:3306/user_db?useSSL=false
+    url: r2dbc:mysql://qr-mysql:3306/user_db?useSSL=false
     username: root
-    password: root123456
+    password: ${MYSQL_ROOT_PASSWORD}
     pool:
       initial-size: 5
       max-size: 10
 
   data:
     redis:
-      host: localhost
+      host: qr-redis  # 使用容器名
       port: 6379
-      password: redis123456
+      password: ${REDIS_PASSWORD}
       lettuce:
         pool:
           max-active: 8
@@ -67,11 +69,11 @@ spring:
     repair-on-migrate: true # 启动时自动修复校验和不匹配问题
     baseline-on-migrate: true # 如果存在基线迁移则忽略历史
     user: root
-    password: root123456
-    url: jdbc:mysql://localhost:3306/user_db?useSSL=false
+    password: ${MYSQL_ROOT_PASSWORD}
+    url: jdbc:mysql://qr-mysql:3306/user_db?useSSL=false
 
 jwt:
-  secret-key: ziRt0uB6W4bGYny2Vq5AuhnZktJ5ZUPL75Xi9Pgj1fU=
+  secret-key: cg4dpZmWWQILnibVF8i40TKp/URCsT0hzDISsykTMP0=
   access-token-expire: 2h # 访问令牌有效期
   refresh-token-expire: 7d # 刷新令牌有效期
 server:

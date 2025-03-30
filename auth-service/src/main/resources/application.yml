@@ -34,7 +34,8 @@ spring:
           max-active: 8
           max-idle: 8
 jwt:
-  secret-key: ziRt0uB6W4bGYny2Vq5AuhnZktJ5ZUPL75Xi9Pgj1fU=
+  secret-key: DwXLs5v0Kmzxsu0Fzk9mEaZ2jNuo59xurph3gaOduQipuyh/l58JSJGNppZrbeZs
+XEQEWNRQ2uhkwNZ+z9lF4A==
   access-token-expire: PT2H
   refresh-token-expire: P7D
 
