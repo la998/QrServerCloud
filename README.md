@@ -120,7 +120,7 @@
 ### Redis
 ```shell
   # 1. 检查容器网络连通性
-  docker network inspect qr-network 
+  docker network inspect qr_network 
   # 2. 检查 Redis 日志
   docker logs redis
   # 3. 手动测试连接

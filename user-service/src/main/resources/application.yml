@@ -1,3 +1,4 @@
+
 audit:
   retention-days: 180    # 日志保留天数
   sensitive-fields: password,token  # 敏感字段列表
@@ -7,15 +8,15 @@ spring:
   cloud:
     nacos:
       config:
-        server-addr: qr-nacos:8848  # 使用容器名而非 127.0.0.1
+        server-addr: nacos:8848  # 使用容器名而非 127.0.0.1
         username: nacos
-        password: ${NACOS_AUTH_PASSWORD}
+        password: nacos123456
       discovery:
-        server-addr: 127.0.0.1:8848
+        server-addr: nacos:8848
         username: nacos
-        password: ${NACOS_AUTH_PASSWORD}
+        password: nacos123456
         grpc:
-          server-addr: 127.0.0.1:9848
+          server-addr: nacos:9848
     seata:
       enabled: true
       application-id: user-service
@@ -26,19 +27,19 @@ spring:
       registry:
         type: nacos
         nacos:
-          server-addr: qr-nacos:8848
+          server-addr: nacos:8848
           namespace: public
           group: SEATA_GROUP
           username: nacos
-          password: ${NACOS_AUTH_PASSWORD}
+          password: nacos123456
       config:
         type: nacos
         nacos:
-          server-addr: qr-nacos:8848
+          server-addr: nacos:8848
           namespace: public
           group: SEATA_GROUP
           username: nacos
-          password: ${NACOS_AUTH_PASSWORD}
+          password: nacos123456
   security:
     oauth2:
       resourceserver:
@@ -46,16 +47,16 @@ spring:
           issuer-uri: http://auth-service
 
   r2dbc:
-    url: r2dbc:mysql://qr-mysql:3306/user_db?useSSL=false
+    url: r2dbc:mysql://mysql:3306/user_db?useSSL=false
     username: root
-    password: ${MYSQL_ROOT_PASSWORD}
+    password: root123456
     pool:
       initial-size: 5
       max-size: 10
 
   data:
     redis:
-      host: qr-redis  # 使用容器名
+      host: redis  # 使用容器名
       port: 6379
       password: ${REDIS_PASSWORD}
       lettuce:
@@ -69,8 +70,13 @@ spring:
     repair-on-migrate: true # 启动时自动修复校验和不匹配问题
     baseline-on-migrate: true # 如果存在基线迁移则忽略历史
     user: root
-    password: ${MYSQL_ROOT_PASSWORD}
-    url: jdbc:mysql://qr-mysql:3306/user_db?useSSL=false
+    password: root123456
+    url: jdbc:mysql://mysql:3306/user_db?useSSL=false
+
+  datasource:
+    url: jdbc:mysql://mysql:3306/user_db?useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: root123456
 
 jwt:
   secret-key: cg4dpZmWWQILnibVF8i40TKp/URCsT0hzDISsykTMP0=

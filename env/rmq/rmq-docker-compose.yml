@@ -1,0 +1,30 @@
+version: "3.8"
+services:
+  rmqnamesrv:
+    image: apache/rocketmq:5.1.4
+    container_name: rmqnamesrv
+    ports:
+      - "9876:9876"
+    command: sh mqnamesrv
+    networks: [ qr_network ]
+
+  rmqbroker:
+    image: apache/rocketmq:5.1.4
+    container_name: rmqbroker
+    ports:
+      - "10909:10909"
+      - "10911:10911"
+      - "10912:10912"
+    environment:
+      - NAMESRV_ADDR=rmqnamesrv:9876
+      - JAVA_OPT_EXT=-server -Xms512m -Xmx512m
+    command: sh mqbroker -c /home/rocketmq/conf/broker.conf
+    volumes:
+      - ../configs/broker.conf:/home/rocketmq/conf/broker.conf  # 挂载配置文件
+    depends_on:
+      - rmqnamesrv
+    networks: [ qr_network ]
+
+networks:
+  qr_network:
+    external: true  # 声明使用外部网络
