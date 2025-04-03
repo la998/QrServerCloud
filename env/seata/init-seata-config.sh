@@ -4,7 +4,18 @@ set -exo pipefail
 # 等待服务就绪函数
 wait_for_nacos_user() {
   echo "Waiting for Nacos user initialization..."
-  until curl -s -u "nacos:nacos" "http://nacos:8848/nacos/v1/auth/users?username=nacos" | grep -q "nacos"; do
+  until curl -s -u "nacos:nacos123456" "http://nacos:8848/nacos/v1/auth/users?username=nacos" | grep -q "nacos"; do
+    sleep 2
+  done
+}
+wait_for_nacos() {
+  until nc -z nacos 8848; do
+    echo "Waiting for Nacos to start..."
+    sleep 2
+  done
+
+  until curl -s "http://nacos:8848/nacos/" | grep -q "Nacos"; do
+    echo "Waiting for Nacos API..."
     sleep 2
   done
 }
@@ -12,9 +23,7 @@ wait_for_nacos_user() {
 # 主逻辑
 main() {
   # 等待 Nacos 端口开放
-  while ! nc -z nacos 8848; do
-    sleep 2
-  done
+  wait_for_nacos
 
   # 等待用户数据就绪
   wait_for_nacos_user
@@ -27,7 +36,7 @@ store.db.dbType=mysql
 store.db.driverClassName=com.mysql.cj.jdbc.Driver
 store.db.url=jdbc:mysql://mysql:3306/seata?useUnicode=true%26characterEncoding=utf8%26connectTimeout=1000%26socketTimeout=3000%26autoReconnect=true%26useSSL=false
 store.db.user=seata
-store.db.password=seata
+store.db.password=seata123456
 store.db.minConn=1
 store.db.maxConn=20
 store.db.maxWait=5000

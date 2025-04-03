@@ -1,4 +1,3 @@
-version: "3.8"
 services:
   rmqnamesrv:
     image: apache/rocketmq:5.1.4

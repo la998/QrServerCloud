@@ -1,4 +1,3 @@
-version: "3.8"
 services:
   sentinel:
     image: bladex/sentinel-dashboard:1.8.6
