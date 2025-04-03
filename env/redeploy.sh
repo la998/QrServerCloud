@@ -12,6 +12,14 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # 重置颜色
 
+# 提前验证sudo权限
+check_sudo() {
+  echo -e "${YELLOW}▶ 检查sudo权限...${NC}"
+  sudo -v || { echo -e "${RED}✗ 需要sudo权限执行清理操作${NC}"; exit 1; }
+  # 保持sudo活跃状态
+  while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+}
+
 # 清理函数
 cleanup() {
   echo -e "${YELLOW}▶ 正在停止并删除所有容器...${NC}"
@@ -97,6 +105,7 @@ trap 'echo -e "${RED}✗ 脚本执行中断，请检查错误！${NC}"; exit 1' 
 
 # 执行主流程
 main() {
+  check_sudo
   case "$1" in
     prod)
       echo "生产环境模式"

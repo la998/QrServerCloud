@@ -47,9 +47,9 @@ services:
     command: [ "bash", "-c", "/scripts/init-seata-config.sh && touch /scripts/init-complete.flag && tail -f /dev/null" ]
     healthcheck:
       test: [ "CMD", "test", "-f", "/scripts/init-complete.flag" ]
-      interval: 5s
-      timeout: 3s
-      retries: 10
+      interval: 20s
+      timeout: 10s
+      retries: 20
 
     networks: [qr_network]
 
