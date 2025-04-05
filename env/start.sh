@@ -1,78 +1,69 @@
 #!/bin/bash
-# start.sh - 启动所有服务
-set -eo pipefail
+# start.sh - 启动所有服务（兼容Bash 3）
 
-SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-cd "$SCRIPT_DIR"
+source "$(dirname "$0")/common.sh"
 
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m' # 重置颜色
+SCRIPT_DIR=$(get_script_dir)
+cd "$SCRIPT_DIR/" || exit 1
 
-wait_for_service() {
-  local service=$1
-  local port=$2
-  local max_retry=30
-  local try=0
+check_docker
 
-  echo -ne "等待 ${YELLOW}${service}${NC} 就绪..."
-  while ! nc -z localhost $port && [ $try -lt $max_retry ]; do
-    sleep 2
-    echo -n "."
-    try=$((try + 1))
-  done
+# 服务启动顺序及检测配置（使用普通数组替代关联数组）
+SERVICES=(
+    "mysql 3306 tcp"
+    "nacos 8848 http"
+    "seata 8091 tcp"
+    "sentinel 8858 http"
+    "redis 6379 tcp"
+    "rmqnamesrv 9876 tcp"
+)
 
-  if [ $try -eq $max_retry ]; then
-    echo -e " ${RED}✗ 服务启动超时${NC}"
-    exit 1
-  else
-    echo -e " ${GREEN}✓${NC}"
-  fi
+main() {
+    show_header "服务启动流程"
+
+    # 创建专用网络
+    if ! docker network inspect qr_network &>/dev/null; then
+        show $YELLOW "▶ 创建Docker网络..."
+        docker network create qr_network
+    fi
+
+    # 按顺序启动服务
+    for service_info in "${SERVICES[@]}"; do
+        local service=$(echo "$service_info" | awk '{print $1}')
+        local port=$(echo "$service_info" | awk '{print $2}')
+        local type=$(echo "$service_info" | awk '{print $3}')
+
+        show $YELLOW "▶ 启动 $service"
+        case $service in
+            mysql)
+                docker-compose -f mysql/mysql-docker-compose.yaml up -d
+                ;;
+            nacos)
+                docker-compose -f nacos-docker/nacos/cluster-hostname.yaml up -d
+                ;;
+            seata)
+                docker-compose -f seata/seata-docker-compose.yml up -d
+                ;;
+            sentinel)
+                docker-compose -f sentinel/sentinel-docker-compose.yml up -d
+                ;;
+            redis)
+                docker-compose -f redis/redis-docker-compose.yml up -d
+                ;;
+            rmqnamesrv)
+                docker-compose -f rmq/rmq-docker-compose.yml up -d
+                ;;
+        esac
+
+        wait_for_service $service $port $type || exit 1
+    done
+
+    show_header "服务访问信息"
+    echo "Nacos控制台:    http://localhost:8848/nacos (nacos/nacos)"
+    echo "Sentinel面板:   http://localhost:8858"
+    echo "Seata控制台:    http://localhost:7091"
+    echo "RocketMQ仪表盘: http://localhost:8080"
 }
 
-case "$1" in
-  prod)
-    echo "生产环境模式"
-    export COMPOSE_PROFILES="prod"
-    ;;
-  *)
-    echo "开发环境模式"
-    export COMPOSE_PROFILES="dev"
-    ;;
-esac
-
-echo -e "${YELLOW}▶ 创建 Docker 网络...${NC}"
-docker network create --driver bridge qr_network || true
-
-echo -e "${YELLOW}▶ 启动 mysql...${NC}"
-docker-compose -f mysql/mysql-docker-compose.yaml up -d
-wait_for_service "Mysql" 3306
-
-echo -e "${YELLOW}▶ 启动 Nacos 集群...${NC}"
-docker-compose -f nacos-docker/nacos/cluster-hostname.yaml up -d
-wait_for_service "Nacos" 8848
-
-echo -e "${YELLOW}▶ 启动 Seata...${NC}"
-docker-compose -f seata/seata-docker-compose.yml up -d
-wait_for_service "Seata" 8091
-
-echo -e "${YELLOW}▶ 启动 Sentinel...${NC}"
-docker-compose -f sentinel/sentinel-docker-compose.yml up -d
-wait_for_service "Sentinel" 8858
-
-echo -e "${YELLOW}▶ 启动 Redis...${NC}"
-docker-compose -f redis/redis-docker-compose.yml up -d
-wait_for_service "Redis" 6379
-
-echo -e "${YELLOW}▶ 启动 RocketMQ...${NC}"
-docker-compose -f rmq/rmq-docker-compose.yml up -d
-wait_for_service "RocketMQ" 9876
-
-echo -e "\n${YELLOW}========== 访问信息 ==========${NC}"
-echo -e "${GREEN}Nacos:    http://localhost:8848/nacos (用户名: nacos)"
-echo "Sentinel: http://localhost:8858"
-echo "Seata: http://localhost:7091/#/login"
-echo -e "${YELLOW}==============================${NC}"
-
-trap 'echo -e "${RED}✗ 脚本执行中断，请检查错误！${NC}"; exit 1' INT TERM
+trap 'show $RED "✗ 启动过程中断"; exit 2' INT TERM
+main "$@"

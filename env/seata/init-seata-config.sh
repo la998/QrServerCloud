@@ -63,6 +63,7 @@ curl -X POST -H "${NACOS_AUTH_IDENTITY_KEY}: ${NACOS_AUTH_IDENTITY_VALUE}" \
   echo "Seata 配置已推送至 Nacos"
 
   # 创建健康检查标志文件（容器内路径）
-  touch init-complete.flag
+  echo "Creating health check flag..."
+  touch /app/init-complete.flag
 }
 main "$@"

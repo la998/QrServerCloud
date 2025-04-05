@@ -38,9 +38,9 @@
   * Seata Version 2.0.0 （ https://seata.apache.org/zh-cn/ ）
 
 ### 模块
-  * gate-service 网关服务
+  * gateway-service 网关服务
   * auth-service 认证服务
-  * 用户服务
+  * user-service 用户服务
   * 二维码服务
   * 标签服务
  

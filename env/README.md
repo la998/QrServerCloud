@@ -1,23 +1,18 @@
 ### 基础设施启动顺序
 
-* 文件权限设置
+* 命令文件权限设置
 ```shell
-chmod +x redeploy.sh stop.sh start.sh restart.sh down.sh
+chmod +x {stop,start,clean,common}.sh
 chmod -R 777 ./data/
 ```
-* 一键部署 - 开发环境
+
 ```shell
-  ./redeploy.sh
-```
-* 一键部署 - 生产环境
-```shell
-  ./redeploy.sh prod
-```
-```shell
-./redeploy.sh   #重新部署，完全重置环境，以及删除自定义的挂载数据（data文件夹内的所有文件目录）
-./down.sh       #清理服务，停止并删除所有容器、网络及卷（需指定参数），彻底清理服务环境，不删除自定义的挂载数据文件
-./start.sh      #启动服务，创建并启动所有容器、网络和卷。如果镜像不存在，会自动拉取或构建
-./stop.sh       #暂停服务，停止所有或指定运行中的容器，但不删除容器、网络或卷，保留容器状态以便后续恢复
+./start.sh                #启动服务，启动所有服务，创建并启动所有容器、网络和卷。如果镜像不存在，会自动拉取或构建。
+./stop.sh                 #暂停服务，停止容器但保留容器和数据，以便后续恢复。
+./stop.sh && ./start.sh   #重启服务，调用stop.sh和start.sh。
+./clean.sh                #清理容器和数据（带选项）,clean.sh支持-v（删除卷）和-f（强制删除数据文件）
+./clean.sh -vf            #完全清理（删除卷和数据文件）
+./clean.sh -vf && ./start.sh  #重新部署，一键部署
 ```
 
 * 创建名为 qr_network 的桥接网络（持久化存储配置）

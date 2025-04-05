@@ -1,5 +1,10 @@
 FROM curlimages/curl:latest
 
+# 创建专用目录并设置权限
 USER root
-RUN apk add --no-cache bash
-USER curl_user
+RUN apk add --no-cache bash && \
+    mkdir -p /app && \
+    chown -R 1000:1000 /app
+USER 1000
+
+WORKDIR /app

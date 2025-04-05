@@ -43,13 +43,13 @@ services:
       NACOS_AUTH_IDENTITY_VALUE: ${NACOS_AUTH_IDENTITY_VALUE}
       NACOS_AUTH_PASSWORD: ${NACOS_AUTH_PASSWORD}
     volumes:
-      - ./init-seata-config.sh:/scripts/init-seata-config.sh  # 挂载宿主机脚本目录到容器
-    command: [ "bash", "-c", "/scripts/init-seata-config.sh && touch /scripts/init-complete.flag && tail -f /dev/null" ]
+      - ./init-seata-config.sh:/app/init-seata-config.sh  # 挂载宿主机脚本目录到容器
+    command: [ "bash", "-c", "/app/init-seata-config.sh && touch /app/init-complete.flag && tail -f /dev/null" ]
     healthcheck:
-      test: [ "CMD", "test", "-f", "/scripts/init-complete.flag" ]
-      interval: 20s
-      timeout: 10s
-      retries: 20
+      test: ["CMD", "test", "-f", "/app/init-complete.flag"]
+      interval: 15s    # 检测间隔
+      timeout: 10s     # 单次检测超时
+      retries: 20      # 重试次数
 
     networks: [qr_network]
 
