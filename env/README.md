@@ -110,7 +110,22 @@ chmod -R 777 ./data/
   # 应显示用户信息
   
 ```
+```shell
+# 更新包列表并安装工具（使用 root 权限）
+docker exec -u root rmqproxy apt-get update
+docker exec -u root rmqproxy apt-get install -y net-tools telnet curl
+# 检查 8082 端口是否绑定到 0.0.0.0
+docker exec rmqproxy netstat -tulnp | grep 8082
 
+# 期望输出（关键指标 0.0.0.0:8082 或 :::8082）：
+tcp6 0 0 :::8082 :::* LISTEN 1/java
+
+# 容器内测试
+docker exec rmqproxy curl -v http://localhost:8082/health
+
+# 宿主机测试
+curl -v http://localhost:8082/health
+```
 ```shell
 
   # 下载 Nacos 官方 SQL 文件

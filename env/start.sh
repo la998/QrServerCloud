@@ -15,10 +15,6 @@ SERVICES=(
     "seata 8091 tcp"
     "sentinel 8858 http"
     "redis 6379 tcp"
-    "rmqnamesrv 9876 tcp"
-    "rmqbroker 10911 tcp"
-    "rmqproxy 8080 http"
-    "rocketmq-dashboard 8089 http"
 )
 
 main() {
@@ -53,15 +49,6 @@ main() {
             redis)
                 docker-compose -f redis/redis-docker-compose.yml up -d
                 ;;
-            rmqnamesrv)
-                docker-compose -f rmq/rmq-docker-compose.yml up -d
-                ;;
-            rmqproxy)
-                docker-compose -f rmq/rmq-docker-compose.yml up -d proxy
-                ;;
-            rocketmq-dashboard)
-                docker-compose -f rmq/rmq-docker-compose.yml up -d dashboard
-                ;;
         esac
 
         wait_for_service $service $port $type || exit 1
@@ -71,7 +58,6 @@ main() {
     echo "Nacos控制台:    http://localhost:8848/nacos (nacos/nacos)"
     echo "Sentinel面板:   http://localhost:8858"
     echo "Seata控制台:    http://localhost:7091"
-    echo "RocketMQ仪表盘: http://localhost:8080"
 }
 
 trap 'show $RED "✗ 启动过程中断"; exit 2' INT TERM

@@ -86,5 +86,4 @@ COMPOSE_FILES=(
     "seata/seata-docker-compose.yml"
     "sentinel/sentinel-docker-compose.yml"
     "redis/redis-docker-compose.yml"
-    "rmq/rmq-docker-compose.yml"
 )
