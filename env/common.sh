@@ -7,9 +7,9 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-MAX_RETRY_ATTEMPTS=12    # 最大重试次数增加到30次
-RETRY_INTERVAL=10        # 重试间隔调整为10秒
-CRITICAL_SERVICE_RETRY=30 # 关键服务最大重试次数
+MAX_RETRY_ATTEMPTS=20    # 最大重试次数增加到30次
+RETRY_INTERVAL=6        # 重试间隔调整为10秒
+CRITICAL_SERVICE_RETRY=50 # 关键服务最大重试次数
 
 # 获取脚本真实路径
 get_script_dir() {

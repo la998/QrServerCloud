@@ -3,7 +3,21 @@ services:
     image: seataio/seata-server:2.0.0
     container_name: seata
     ports: [ "8091:8091","7091:7091" ]
+    deploy:
+      resources:
+        limits:
+          memory: 264m
     environment:
+      JAVA_OPTS: >-
+        -Xms48m 
+        -Xmx96m 
+        -XX:MaxMetaspaceSize=64m 
+        -XX:+UseSerialGC 
+        -XX:MinHeapFreeRatio=20 
+        -XX:MaxHeapFreeRatio=40 
+        -XX:MaxTenuringThreshold=3 
+        -XX:+AlwaysPreTouch
+        -Dseata.enabledModules=server,core,apm
       STORE_MODE: db
       STORE_DB_DBTYPE: mysql
       STORE_DB_DATASOURCE: druid
@@ -35,6 +49,10 @@ services:
       dockerfile: Dockerfile.init-config  # 指定 Dockerfile 路径
     image: init-seata-to-nacos-config:latest  # 自定义镜像名称
     container_name: init-seata-config
+    deploy:
+      resources:
+        limits:
+          memory: 32m
     user: "${UID}:${GID}"  # 动态绑定用户
     environment:
       UID: 1000

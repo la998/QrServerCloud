@@ -3,6 +3,17 @@ services:
     hostname: nacos1
     container_name: nacos1
     image: nacos/nacos-server:${NACOS_VERSION}
+    environment:
+      JVM_XMS: 128m     # 初始堆内存
+      JVM_XMX: 256m     # 最大堆内存
+      JVM_XMN: 128m     # 年轻代大小 (建议占堆的1/3)
+      JVM_MS: 64m       # Metaspace初始
+      JVM_MMS: 128m     # Metaspace最大
+      JVM_OPT: "-XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:MaxDirectMemorySize=96m"  # 启用G1垃圾回收器
+    deploy:
+      resources:
+        limits:
+          memory: 300m
     volumes:
       - ../../data/nacos/cluster-logs/nacos1:/home/nacos/logs
     ports:
@@ -21,52 +32,74 @@ services:
     networks:
       qr_network:
         aliases: [nacos]
-
-  nacos2:
-    hostname: nacos2
-    image: nacos/nacos-server:${NACOS_VERSION}
-    container_name: nacos2
-    volumes:
-      - ../../data/nacos/cluster-logs/nacos2:/home/nacos/logs
-    ports:
-      - "7849:7848"
-      - "8849:8848"
-      - "9869:9848"
-      - "9851:9849"
-    env_file:
-      - ../env/nacos-hostname.env
-    restart: always
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8848/nacos/" ]
-      interval: 15s
-      timeout: 10s
-      retries: 10
-    networks:
-      qr_network:
-        aliases: [nacos]
-
-  nacos3:
-    hostname: nacos3
-    image: nacos/nacos-server:${NACOS_VERSION}
-    container_name: nacos3
-    volumes:
-      - ../../data/nacos/cluster-logs/nacos3:/home/nacos/logs
-    ports:
-      - "7850:7848"
-      - "8850:8848"
-      - "9870:9848"
-      - "9852:9849"
-    env_file:
-      - ../env/nacos-hostname.env
-    restart: always
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8848/nacos/" ]
-      interval: 15s
-      timeout: 10s
-      retries: 10
-    networks:
-      qr_network:
-        aliases: [nacos]
+#
+#  nacos2:
+#    hostname: nacos2
+#    image: nacos/nacos-server:${NACOS_VERSION}
+#    container_name: nacos2
+#    environment:
+#      JVM_XMS: 256m     # 初始堆内存
+#      JVM_XMX: 384m     # 最大堆内存
+#      JVM_XMN: 128m     # 年轻代大小 (建议占堆的1/3)
+#      JVM_MS: 64m       # Metaspace初始
+#      JVM_MMS: 128m     # Metaspace最大
+#      JVM_OPT: "-XX:+UseG1GC -XX:MaxGCPauseMillis=200"  # 启用G1垃圾回收器
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 600m
+#    volumes:
+#      - ../../data/nacos/cluster-logs/nacos2:/home/nacos/logs
+#    ports:
+#      - "7849:7848"
+#      - "8849:8848"
+#      - "9869:9848"
+#      - "9851:9849"
+#    env_file:
+#      - ../env/nacos-hostname.env
+#    restart: always
+#    healthcheck:
+#      test: [ "CMD", "curl", "-f", "http://localhost:8848/nacos/" ]
+#      interval: 15s
+#      timeout: 10s
+#      retries: 10
+#    networks:
+#      qr_network:
+#        aliases: [ nacos ]
+#
+#  nacos3:
+#    hostname: nacos3
+#    image: nacos/nacos-server:${NACOS_VERSION}
+#    container_name: nacos3
+#    environment:
+#      JVM_XMS: 256m     # 初始堆内存
+#      JVM_XMX: 384m     # 最大堆内存
+#      JVM_XMN: 128m     # 年轻代大小 (建议占堆的1/3)
+#      JVM_MS: 64m       # Metaspace初始
+#      JVM_MMS: 128m     # Metaspace最大
+#      JVM_OPT: "-XX:+UseG1GC -XX:MaxGCPauseMillis=200"  # 启用G1垃圾回收器
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 600m
+#    volumes:
+#      - ../../data/nacos/cluster-logs/nacos3:/home/nacos/logs
+#    ports:
+#      - "7850:7848"
+#      - "8850:8848"
+#      - "9870:9848"
+#      - "9852:9849"
+#    env_file:
+#      - ../env/nacos-hostname.env
+#    restart: always
+#    healthcheck:
+#      test: [ "CMD", "curl", "-f", "http://localhost:8848/nacos/" ]
+#      interval: 15s
+#      timeout: 10s
+#      retries: 10
+#    networks:
+#      qr_network:
+#        aliases: [ nacos ]
 
 networks:
   qr_network:

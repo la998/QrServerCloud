@@ -16,6 +16,9 @@ SERVICES=(
     "sentinel 8858 http"
     "redis 6379 tcp"
     "rmqnamesrv 9876 tcp"
+    "rmqbroker 10911 tcp"
+    "rmqproxy 8080 http"
+    "rocketmq-dashboard 8089 http"
 )
 
 main() {
@@ -52,6 +55,12 @@ main() {
                 ;;
             rmqnamesrv)
                 docker-compose -f rmq/rmq-docker-compose.yml up -d
+                ;;
+            rmqproxy)
+                docker-compose -f rmq/rmq-docker-compose.yml up -d proxy
+                ;;
+            rocketmq-dashboard)
+                docker-compose -f rmq/rmq-docker-compose.yml up -d dashboard
                 ;;
         esac
 
