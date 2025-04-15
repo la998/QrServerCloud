@@ -27,6 +27,6 @@ GRANT ALL PRIVILEGES ON auth_db.* TO 'nacos'@'%' WITH GRANT OPTION;
 
 -- user-service 用户模块 数据库
 CREATE DATABASE IF NOT EXISTS user_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-GRANT ALL PRIVILEGES ON auth_db.* TO 'nacos'@'%' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON user_db.* TO 'nacos'@'%' WITH GRANT OPTION;
 
 FLUSH PRIVILEGES;
