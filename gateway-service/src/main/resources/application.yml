@@ -25,13 +25,13 @@ spring:
         service: gateway-service
         server-addr: localhost:8848  # 替换为实际 Nacos 地址
         username: nacos  # Nacos 服务端用户名（默认是 nacos）
-        password: nacos  # Nacos 服务端密码（默认是 nacos）
+        password: nacos123456  # Nacos 服务端密码（默认是 nacos）
 
     # Sentinel 流量控制
     sentinel:
       eager: true # 立即初始化
       transport:
-        dashboard: localhost:8080  # 替换为实际 Sentinel 控制台地址
+        dashboard: localhost:8858  # 替换为实际 Sentinel 控制台地址
         port: 8719 # 本地端口
       filter:
         enabled: false # 禁用默认的Servlet Filter

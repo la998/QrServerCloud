@@ -1,6 +1,5 @@
-
 audit:
-  retention-days: 180    # 日志保留天数
+  retention-days: 18    # 日志保留天数
   sensitive-fields: password,token  # 敏感字段列表
 spring:
   application:
@@ -8,11 +7,11 @@ spring:
   cloud:
     nacos:
       config:
-        server-addr: nacos:8848  # 使用容器名而非 127.0.0.1
+        server-addr: localhost:8848  # 使用容器名而非 127.0.0.1
         username: nacos
         password: nacos123456
       discovery:
-        server-addr: nacos:8848
+        server-addr: localhost:8848
         username: nacos
         password: nacos123456
         grpc:
@@ -27,7 +26,7 @@ spring:
       registry:
         type: nacos
         nacos:
-          server-addr: nacos:8848
+          server-addr: localhost:8848
           namespace: public
           group: SEATA_GROUP
           username: nacos
@@ -35,7 +34,7 @@ spring:
       config:
         type: nacos
         nacos:
-          server-addr: nacos:8848
+          server-addr: localhost:8848
           namespace: public
           group: SEATA_GROUP
           username: nacos
@@ -47,9 +46,9 @@ spring:
           issuer-uri: http://auth-service
 
   r2dbc:
-    url: r2dbc:mysql://mysql:3306/user_db?useSSL=false
-    username: root
-    password: root123456
+    url: r2dbc:mysql://localhost:3306/user_db?useSSL=false
+    username: nacos
+    password: nacos123456
     pool:
       initial-size: 5
       max-size: 10
@@ -58,7 +57,7 @@ spring:
     redis:
       host: redis  # 使用容器名
       port: 6379
-      password: ${REDIS_PASSWORD}
+      password: redis123456
       lettuce:
         pool:
           max-active: 8
@@ -70,13 +69,13 @@ spring:
     repair-on-migrate: true # 启动时自动修复校验和不匹配问题
     baseline-on-migrate: true # 如果存在基线迁移则忽略历史
     user: root
-    password: root123456
-    url: jdbc:mysql://mysql:3306/user_db?useSSL=false
+    password: root
+    url: jdbc:mysql://localhost:3306/user_db?useSSL=false
 
   datasource:
-    url: jdbc:mysql://mysql:3306/user_db?useSSL=false&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://localhost:3306/user_db?useSSL=false&serverTimezone=Asia/Shanghai
     username: root
-    password: root123456
+    password: root
 
 jwt:
   secret-key: cg4dpZmWWQILnibVF8i40TKp/URCsT0hzDISsykTMP0=
